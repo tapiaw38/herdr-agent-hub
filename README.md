@@ -12,7 +12,7 @@ A native terminal dashboard for agents already running in Herdr, plus reusable l
 - Type into the embedded terminal and answer approval prompts with ordinary keys through Herdr's terminal controller.
 - Store reusable templates and launched-session identity atomically in Herdr's plugin config directory.
 - Periodic refresh, dashboard/detail/help views, keyboard navigation, search, favorites, and create/delete profile flow.
-- Provider-specific and selectable 8×8 pixel avatars rendered with Unicode half-blocks, with custom icon and color support.
+- Provider-specific and 16 selectable 8×8 pixel avatars rendered with Unicode half-blocks, with custom icon and color support.
 - Scrollable agent list, persistent favorites for detected agents, terminal output viewport, and confirmed starts for Herdr-supported agent kinds.
 - Plugin action to focus the last opened Agent Hub pane after focusing another agent.
 - A manifest action that opens or returns focus to the dashboard, so Herdr keybindings can launch it.
@@ -41,7 +41,7 @@ Invoke the action from the workspace where you want Agent Hub. The action opens 
 
 `HERDR_BIN_PATH` is preferred; outside Herdr, the executable falls back to `herdr` on `PATH`. Config uses `HERDR_PLUGIN_CONFIG_DIR/agents.json`; `HERDR_PLUGIN_STATE_DIR` stores only runtime pane identity. No secrets are stored.
 
-Create and edit reusable templates with **N** and **E**. Templates hold identity, instructions, provider, and avatar; they do not reserve a workspace or pane. Choose pixel avatar with arrows or `j`/`k`, or press 1–8. **Ctrl+K** opens provider picker. **Ctrl+P** can associate an existing agent for reference, but does not bind template to its workspace. **Tab** advances, **Shift+Tab** goes back, and **Ctrl+S** saves. Start a template with **A**; choose workspace and shell pane during launch. After Herdr confirms startup, Agent Hub saves a session-to-template association so each launched session keeps its chosen avatar, even when template is reused.
+Create and edit reusable templates with **N** and **E**. Templates hold identity, instructions, provider, and avatar; they do not reserve a workspace or pane. Choose among 16 pixel avatars with arrows or `j`/`k`; numbered labels **01–16** identify each avatar. **Ctrl+K** opens provider picker. **Ctrl+P** can associate an existing agent for reference, but does not bind template to its workspace. **Tab** advances, **Shift+Tab** goes back, and **Ctrl+S** saves. Start a template with **A**; choose workspace and shell pane during launch. After Herdr confirms startup, Agent Hub saves a session-to-template association so each launched session keeps its chosen avatar, even when template is reused.
 
 Dashboard separates **AGENT SESSIONS** (live Herdr panes) from **AGENT TEMPLATES** (saved profiles not running). Start with **A**. Choose template, then workspace and shell pane. Review and confirm with **Y** or **Enter**. Identity instructions are sent as a normal first `herdr agent prompt` after startup; they are not provider system prompts and may not persist after restart. Sessions retain template avatar and display identity by Herdr pane and agent name. A timeout or `agent_not_ready` may mean provider started but Herdr could not confirm readiness; refresh before retrying. After focusing an agent, return to Agent Hub with `herdr plugin action invoke community.herdr-agent-hub.focus-dashboard` from a Herdr terminal.
 
@@ -115,7 +115,7 @@ Config example (`agents.json`):
 | Ctrl+S in profile editor | Save profile from any field |
 | D, then Y | Delete selected local profile; keep live Herdr pane |
 | F | Persist favorite for any detected agent |
-| ↑/↓, j/k or 1–8 in Avatar field | Choose predefined pixel avatar |
+| ↑/↓, j/k in Avatar field | Choose one of 16 predefined pixel avatars (numbered 01–16) |
 | / | Search |
 | R | Refresh |
 | Esc | Back |

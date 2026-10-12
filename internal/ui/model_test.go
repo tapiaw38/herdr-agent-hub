@@ -534,6 +534,7 @@ func TestAgentListRendersFullPixelAvatar(t *testing.T) {
 func TestEditorOffersPredefinedAgentIcons(t *testing.T) {
 	m := New(&herdr.Fake{}, storage.Config{Version: storage.SchemaVersion}, t.TempDir())
 	m.startEditor(false)
+	m.width, m.height = 90, 30
 	if got := m.edit[2].Value(); got != "pixel1" {
 		t.Fatalf("default icon=%q, want pixel1", got)
 	}
@@ -545,15 +546,27 @@ func TestEditorOffersPredefinedAgentIcons(t *testing.T) {
 	if got := m.edit[3].Value(); got != "#2596FF" {
 		t.Fatalf("avatar selection did not apply its palette color: %q", got)
 	}
-	m.editorKey(tea.KeyPressMsg{Code: '8', Text: "8"})
-	if got := m.edit[2].Value(); got != "pixel8" {
-		t.Fatalf("quick select icon=%q, want pixel8", got)
+	for range 14 {
+		m.editorKey(tea.KeyPressMsg{Code: tea.KeyDown})
+	}
+	if got := m.edit[2].Value(); got != "pixel16" {
+		t.Fatalf("avatar navigation icon=%q, want pixel16", got)
 	}
 	m.editorKey(tea.KeyPressMsg{Code: 'x', Text: "x"})
-	if got := m.edit[2].Value(); got != "pixel8" {
+	if got := m.edit[2].Value(); got != "pixel16" {
 		t.Fatalf("icon field accepted free text: %q", got)
 	}
-	if view := m.editorView(); !strings.Contains(view, "Pick a pixel avatar") || !strings.Contains(view, "Capsule") {
+	view := m.editorView()
+	if !strings.Contains(view, "Pick a pixel avatar") || !strings.Contains(view, "Mushroom") || !strings.Contains(view, "Bot") || !strings.Contains(view, "16") {
 		t.Fatalf("editor did not show pixel avatar palette: %s", view)
+	}
+	if lines := strings.Split(view, "\n"); len(lines) > m.height {
+		t.Fatalf("avatar selector uses %d rows in %d-row terminal", len(lines), m.height)
+	} else {
+		for _, line := range lines {
+			if lipgloss.Width(line) > m.width {
+				t.Fatalf("avatar selector line exceeds %d columns: %q", m.width, line)
+			}
+		}
 	}
 }

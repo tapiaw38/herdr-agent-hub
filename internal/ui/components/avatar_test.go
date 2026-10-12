@@ -1,9 +1,12 @@
 package components
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 	"testing"
+
+	"charm.land/lipgloss/v2"
 )
 
 func TestAvatarUsesDistinctPixelSprites(t *testing.T) {
@@ -43,5 +46,29 @@ func TestPixelAvatarPresetsRenderDistinctSprites(t *testing.T) {
 	}
 	if !strings.Contains(strings.Join(first, ""), "▀") || !strings.Contains(strings.Join(square, ""), "▀") {
 		t.Fatal("pixel avatar presets did not render half-block pixels")
+	}
+}
+
+func TestAllPresetAvatarsFitConsoleCellsAndHaveUniqueShapes(t *testing.T) {
+	seen := make(map[[8]string]string, 16)
+	for i := 1; i <= 16; i++ {
+		id := fmt.Sprintf("pixel%d", i)
+		sprite, ok := presetSprite(id)
+		if !ok {
+			t.Fatalf("preset %s is missing", id)
+		}
+		if previous, duplicate := seen[sprite]; duplicate {
+			t.Fatalf("presets %s and %s use same silhouette", previous, id)
+		}
+		seen[sprite] = id
+		rows := Avatar("custom", "#19D3AE", id)
+		if len(rows) != 4 {
+			t.Fatalf("preset %s rendered %d rows, want 4", id, len(rows))
+		}
+		for row, rendered := range rows {
+			if width := lipgloss.Width(rendered); width != 8 {
+				t.Fatalf("preset %s row %d has terminal width %d, want 8", id, row, width)
+			}
+		}
 	}
 }

@@ -166,6 +166,14 @@ var agentIconChoices = []iconChoice{
 	{id: "pixel6", name: "Capsule", color: "#FF315B"},
 	{id: "pixel7", name: "Triangle", color: "#F044A1"},
 	{id: "pixel8", name: "Square", color: "#714BFF"},
+	{id: "pixel9", name: "Comet", color: "#F472B6"},
+	{id: "pixel10", name: "Hex", color: "#14B8A6"},
+	{id: "pixel11", name: "Diamond", color: "#38BDF8"},
+	{id: "pixel12", name: "Bloom", color: "#FB7185"},
+	{id: "pixel13", name: "Flame", color: "#F59E0B"},
+	{id: "pixel14", name: "Mushroom", color: "#A3E635"},
+	{id: "pixel15", name: "Star", color: "#67E8F9"},
+	{id: "pixel16", name: "Bot", color: "#A78BFA"},
 }
 
 func New(c herdr.Client, cfg storage.Config, dir string) Model {
@@ -1269,11 +1277,6 @@ func (m *Model) editorKey(k tea.KeyPressMsg) tea.Cmd {
 			m.selectIcon(index)
 			return nil
 		default:
-			if len(key) == 1 && key[0] >= '1' && key[0] <= '8' {
-				index = int(key[0] - '1')
-				m.selectIcon(index)
-				return nil
-			}
 			if len(key) == 1 || k.Text != "" || key == "backspace" || key == "delete" {
 				return nil
 			}
@@ -1383,6 +1386,38 @@ func iconChoiceIndex(id string) int {
 	return -1
 }
 
+func iconShortcut(index int) string {
+	return fmt.Sprintf("%02d", index+1)
+}
+
+func compactIconName(name string) string {
+	switch name {
+	case "Orbit":
+		return "Orb"
+	case "Cloud":
+		return "Clou"
+	case "Amber":
+		return "Amb"
+	case "Capsule":
+		return "Cap"
+	case "Triangle":
+		return "Tri"
+	case "Square":
+		return "Sq"
+	case "Comet":
+		return "Com"
+	case "Diamond":
+		return "Dia"
+	case "Bloom":
+		return "Blo"
+	case "Flame":
+		return "Fla"
+	case "Mushroom":
+		return "Mush"
+	}
+	return name
+}
+
 func (m *Model) selectIcon(index int) {
 	if index < 0 || index >= len(agentIconChoices) {
 		return
@@ -1394,22 +1429,35 @@ func (m *Model) selectIcon(index int) {
 
 func (m Model) iconPalette() []string {
 	selected := m.edit[2].Value()
-	lines := []string{lipgloss.NewStyle().Foreground(theme.Muted).Render("  Pick a pixel avatar · ↑↓/jk or 1–8")}
+	lines := []string{lipgloss.NewStyle().Foreground(theme.Muted).Render("  Pick a pixel avatar · ↑↓/jk to choose · 01–16")}
 	if m.height >= 25 {
 		avatar := components.Avatar("custom", m.edit[3].Value(), selected)
 		lines = append(lines, avatar...)
 	}
 	var options []string
+	columns := 4
+	compact := m.width < 80 || m.height < 25
+	if compact {
+		columns = 8
+	}
 	for i, choice := range agentIconChoices {
-		label := fmt.Sprintf("%d %s", i+1, choice.name)
+		name := choice.name
+		label := iconShortcut(i) + " " + name
+		if compact {
+			label = iconShortcut(i) + compactIconName(name)
+		}
 		if choice.id == selected {
 			label = lipgloss.NewStyle().Foreground(theme.Green).Bold(true).Render("[" + label + "]")
 		} else {
 			label = lipgloss.NewStyle().Foreground(lipgloss.Color(choice.color)).Render(label)
 		}
 		options = append(options, label)
-		if len(options) == 4 || i == len(agentIconChoices)-1 {
-			lines = append(lines, "  "+strings.Join(options, "  "))
+		if len(options) == columns || i == len(agentIconChoices)-1 {
+			separator := "  "
+			if compact {
+				separator = " "
+			}
+			lines = append(lines, "  "+strings.Join(options, separator))
 			options = nil
 		}
 	}
