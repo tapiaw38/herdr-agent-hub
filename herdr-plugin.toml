@@ -1,0 +1,31 @@
+id = "community.herdr-agent-hub"
+name = "Herdr Agent Hub"
+version = "3.12.0"
+min_herdr_version = "0.9.1"
+description = "Terminal dashboard for Herdr agents and local agent profiles"
+platforms = ["linux", "macos"]
+
+[[build]]
+command = ["go", "build", "-o", "agent-hub", "./cmd/agent-hub"]
+platforms = ["linux", "macos"]
+
+[[panes]]
+id = "dashboard"
+title = "Agents"
+placement = "zoomed"
+command = ["./agent-hub"]
+platforms = ["linux", "macos"]
+
+[[actions]]
+id = "open-dashboard"
+title = "Open Agent Hub"
+contexts = ["workspace"]
+command = ["./agent-hub", "open"]
+platforms = ["linux", "macos"]
+
+[[actions]]
+id = "focus-dashboard"
+title = "Focus Agent Hub"
+contexts = ["workspace"]
+command = ["./agent-hub", "focus"]
+platforms = ["linux", "macos"]

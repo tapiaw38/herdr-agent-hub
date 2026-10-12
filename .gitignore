@@ -1,0 +1,4 @@
+/bin/
+/agent-hub
+*.exe
+*.test
